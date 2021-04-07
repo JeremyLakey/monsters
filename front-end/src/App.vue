@@ -7,6 +7,11 @@
       <router-link to="/Board">Leader Board</router-link>
     </div>
     <router-view/>
+
+    <div id="footer">
+        <hr/>
+	<a href="https://github.com/personman61/monsters">Git Hub</a>
+    </div>
   </div>
 </template>
 
@@ -33,5 +38,10 @@
 
 #nav a.router-link-exact-active {
   color: #FFb983;
+}
+
+#footer a {
+float: center;
+text-decoration: none;
 }
 </style>
