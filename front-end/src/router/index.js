@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Board from '../views/Board.vue'
 import Profile from '../views/Profile.vue'
 import Battle from '../views/Battle.vue'
+import Death from '../views/Death.vue'
 
 Vue.use(VueRouter)
 
@@ -28,6 +29,11 @@ const routes = [
     name: 'Battle',
     component: Battle
   },
+  {
+    path: '/death',
+    name: 'Death',
+    component: Death
+  }
 ]
 
 const router = new VueRouter({

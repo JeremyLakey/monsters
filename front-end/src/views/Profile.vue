@@ -18,11 +18,15 @@
         <input v-model="email" placeholder="Email"/>
 	<br/>
         <button @click="register">Register User</button>
+        <div v-if="this.register_fail">
+          <h2>Try a different username and/or email</h2>
+        </div>
       </div>
     </div>
     <div v-else>
       <h1>Hey there {{$root.$data.user.name}}</h1>
       <img :src="this.$root.$data.user.path" />
+      <button @click="logOutUser">Log out</button>
       <button @click="deleteUser">Delete User</button>
       <h2>Monster Creation</h2>
       <input v-model="monster_name" placeholder="Monster Name">
@@ -58,26 +62,34 @@ export default {
       reg_password: "",
       email: "",
       login_fail: false,
+      register_fail: false,
       monster_name: "",
       description: "",
       type: "",
     }
   },
+  async created() {
+    try {
+      let response = await axios.get('/api/user');
+      this.$root.$data.user = response.data.user;
+    }  catch (error) {
+      this.$root.$data.user = null;
+    }
+  },
   methods: {
     async login(){
-      console.log("Loging in with " + this.name);
+      console.log("Loging in with " + this.name + " " + this.password);
       try {
-	let response = await axios.get('/api/user', {});
-	let userList = response.data;
-	console.log(userList);
-	for (let i = 0; i < userList.length; i++) {
-		if (userList[i].name === this.name && userList[i].password === this.password) {
-			this.$root.$data.user = userList[i];
-			console.log(this.$root.$data.user = userList[i]);
-			this.login_fail = false;
-			return;
-		}
+	let response = await axios.post('/api/user/login', {
+          name: this.name,
+          password: this.password
+        });
+	this.$root.$data.user = response.data.user;
+        if (this.$root.$data.user) {
+          this.login_fail = false;
+          return;
         }
+
 	this.login_fail = true;
       } catch (error) {
          console.log(error);
@@ -92,13 +104,14 @@ export default {
         let r2 = await axios.post('/api/user', {
 		name: this.reg_name,
 		password: this.reg_password,
-		email: this.password,
+		email: this.email,
                 record: 0,
         });
         this.$root.$data.user = r2.data;
 
       } catch (error) {
 	console.log(error);
+        this.register_fail = true;
       }
     },
     fileChanged(event) {
@@ -109,7 +122,7 @@ export default {
                 if (this.type === "" || this.monster_name === "" || this.description === "")
                   return;
 
-		let response = await axios.post('/api/monster/' + this.$root.$data.user._id, {
+		let response = await axios.post('/api/monster', {
 			name: this.monster_name,
 			description: this.description,
 			type: this.type,
@@ -127,12 +140,22 @@ export default {
           for(let i = 0; i < this.$root.$data.monsters.length; i++) {
             await axios.delete('/api/monster/' + this.$root.$data.monsters[i]._id, {});
           }
-          await axios.delete('/api/user/' + this.$root.$data.user._id, {});
+          await axios.delete('/api/user/terminate', {});
           this.$root.$data.user = null;
           location.reload();
         } catch (error) {
 		console.log(error);
 	}
+    },
+    async logOutUser() {
+      try {
+        await axios.delete('/api/user/', {});
+        this.$root.$data.user = null;
+        this.$root.$data.monsters = null;
+        location.reload();
+      } catch(error) {
+        console.log(error);
+      }
     }
   },
   watch: {

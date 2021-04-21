@@ -4,8 +4,7 @@
       <h2></h2>
       <div v-for="monster in myMonsters" :key="monster._id">
 	<h3>{{monster.name}} Level:{{monster.level}} Type:{{monster.type}} Score:{{monster.score}}</h3>
-	<button @click="addScore(monster)">Add Score</button>
-        <button @click="addLevel(monster)">Add Level</button>
+	<button @click="selectMonster(monster)">Select Monster</button>
         <button @click="deleteMonster(monster)">Delete</button>
       </div>
     </div>
@@ -33,7 +32,7 @@ export default {
     },
     async addScore(monster) {
       try {
-        await axios.put('/api/monster/update/' + monster._id, {
+        await axios.put('/api/monster/' + monster._id, {
           name: monster.name,
           description: monster.description,
           type: monster.type,
@@ -47,7 +46,7 @@ export default {
     },
     async addLevel(monster) {
       try {
-        await axios.put('/api/monster/update/' + monster._id, {
+        await axios.put('/api/monster/' + monster._id, {
           name: monster.name,
           description: monster.description,
           type: monster.type,
@@ -67,6 +66,10 @@ export default {
         console.log(error);
       }
     },
+    selectMonster(monster) {
+      console.log(monster);
+      this.$root.$data.currentMonster = monster;
+    }
   },
 }
 </script>

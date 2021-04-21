@@ -30,7 +30,7 @@ export default {
   methods: {
     async loadUsers() {
 	try {
-          let response = await axios.get('/api/user', {});
+          let response = await axios.get('/api/user/list', {});
           let userList = response.data;
           if (!(userList.length > 0))
             return; 
